@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="Khafizov_kalculyator/Khafizov_kalculyator.vcxproj" />
+</Solution>
