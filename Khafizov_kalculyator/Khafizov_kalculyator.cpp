@@ -54,7 +54,6 @@ double readDouble(const string& prompt) {
 int readPositiveInt(const string& prompt) {
     while (true) {
         int value = readInt(prompt);
-
         if (value <= 0) {
             cout << "Value must be positive.\n";
             continue;
@@ -101,8 +100,7 @@ void printPipe(const Pipe& p) {
     cout << "Name: " << p.name << "\n";
     cout << "Length: " << p.length << " km\n";
     cout << "Diameter: " << p.diameter << " mm\n";
-    cout << "Under repair: "
-        << (p.underRepair ? "yes" : "no") << "\n";
+    cout << "Under repair: " << (p.underRepair ? "yes" : "no") << "\n";
 }
 
 void editPipeRepair(Pipe& p, bool pipeExists) {
@@ -111,9 +109,7 @@ void editPipeRepair(Pipe& p, bool pipeExists) {
         return;
     }
     p.underRepair = !p.underRepair;
-    cout << "New pipe status: "
-        << (p.underRepair ? "under repair" : "not under repair")
-        << "\n";
+    cout << "New pipe status: " << (p.underRepair ? "under repair" : "not under repair") << "\n";
 }
 
 void inputCS(CS& c) {
@@ -124,8 +120,7 @@ void inputCS(CS& c) {
         c.shopsWorking = readInt("Number of working shops: ");
         if (c.shopsWorking < 0 ||
             c.shopsWorking > c.shopsTotal) {
-            cout << "Number of working shops must be from 0 to "
-                << c.shopsTotal << ".\n";
+            cout << "Number of working shops must be from 0 to " << c.shopsTotal << ".\n";
             continue;
         }
         break;
@@ -154,8 +149,7 @@ void editCSShops(CS& c, bool csExists) {
         if (c.shopsWorking < c.shopsTotal) {
             c.shopsWorking++;
             cout << "Shop started.\n";
-            cout << "Working shops: "
-                << c.shopsWorking << "\n";
+            cout << "Working shops: " << c.shopsWorking << "\n";
         }
         else {
             cout << "All shops are already working.\n";
@@ -165,8 +159,7 @@ void editCSShops(CS& c, bool csExists) {
         if (c.shopsWorking > 0) {
             c.shopsWorking--;
             cout << "Shop stopped.\n";
-            cout << "Working shops: "
-                << c.shopsWorking << "\n";
+            cout << "Working shops: " << c.shopsWorking << "\n";
         }
         else {
             cout << "There are no working shops.\n";
@@ -176,74 +169,65 @@ void editCSShops(CS& c, bool csExists) {
         cout << "Invalid choice.\n";
     }
 }
-
-void saveData(
-    const Pipe& p,
-    bool pipeExists,
-    const CS& c,
-    bool csExists
-) {
+void savePipe(ofstream& fout, const Pipe& p, bool pipeExists) {
+    fout << pipeExists << "\n";
+    if (pipeExists) {
+        fout << p.name << "\n";
+        fout << p.length << " " << p.diameter << " " << p.underRepair << " ";
+    }
+}
+void saveCS(ofstream& fout, const CS& c, bool csExists) {
+    fout << csExists << "\n";
+    if (csExists) {
+        fout << c.name << "\n";
+        fout << c.shopsTotal << " " << c.shopsWorking << " " << c.stationClass << "\n";
+    }
+}
+void saveData(const Pipe& p,bool pipeExists,const CS& c,bool csExists) {
     ofstream fout("data.txt");
     if (!fout) {
         cout << "Failed to open file for writing.\n";
         return;
     }
-    fout << pipeExists << "\n";
-    if (pipeExists) {
-        fout << p.name << "\n";
-        fout << p.length << " "
-            << p.diameter << " "
-            << p.underRepair << "\n";
-    }
-    fout << csExists << "\n";
-    if (csExists) {
-        fout << c.name << "\n";
-        fout << c.shopsTotal << " "
-            << c.shopsWorking << " "
-            << c.stationClass << "\n";
-    }
+    savePipe(fout, p, pipeExists);
+    saveCS(fout, c, csExists);
     fout.close();
     cout << "Data saved to data.txt.\n";
 }
 
-void loadData(
-    Pipe& p,
-    bool& pipeExists,
-    CS& c,
-    bool& csExists
-) {
+void loadPipe(ifstream& fin, Pipe& p, bool& pipeExists) {
+    int flag;
+    fin >> flag;
+    fin.ignore(10000, '\n');
+    pipeExists = (flag != 0);
+    if (pipeExists) {
+        getline(fin, p.name);
+        fin >> p.length >> p.diameter >> p.underRepair;
+        fin.ignore(10000, '\n');
+    }
+}
+void loadCS(ifstream& fin, CS& c, bool& csExists) {
+    int flag;
+    fin >> flag;
+    fin.ignore(10000, '\n');
+    csExists = (flag != 0);
+    if (csExists) {
+        getline(fin, c.name);
+        fin >> c.shopsTotal >> c.shopsWorking >> c.stationClass;
+        fin.ignore(10000, '\n');
+    }
+}
+void loadData(Pipe& p, bool& pipeExists, CS& c, bool& csExists) {
     ifstream fin("data.txt");
     if (!fin) {
         cout << "File data.txt was not found.\n";
         return;
     }
-
-    int flag;
-    fin >> flag;
-    fin.ignore(numeric_limits<streamsize>::max(), '\n');
-    pipeExists = (flag != 0);
-    if (pipeExists) {
-        getline(fin, p.name);
-        fin >> p.length
-            >> p.diameter
-            >> p.underRepair;
-        fin.ignore(numeric_limits<streamsize>::max(), '\n');
-    }
-
-    fin >> flag;
-    fin.ignore(numeric_limits<streamsize>::max(), '\n');
-    csExists = (flag != 0);
-    if (csExists) {
-        getline(fin, c.name);
-        fin >> c.shopsTotal
-            >> c.shopsWorking
-            >> c.stationClass;
-        fin.ignore(numeric_limits<streamsize>::max(), '\n');
-    }
+    loadPipe(fin, p, pipeExists);
+    loadCS(fin, c, csExists);
     fin.close();
     cout << "Data loaded from data.txt.\n";
 }
-
 void showMenu() {
     cout << "\n";
     cout << "        PIPELINE TRANSPORT\n";
@@ -313,8 +297,7 @@ int main() {
             cout << "Exiting program.\n";
             return 0;
         default:
-            cout << "Invalid menu item. "
-                << "Please try again.\n";
+            cout << "Invalid menu item. " << "Please try again.\n";
             break;
         }
     }

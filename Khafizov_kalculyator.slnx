@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="Khafizov_kalculyator/Khafizov_kalculyator.vcxproj" />
+  <Project Path="Khafizov_kalculyator/Khafizov_kalculyator.vcxproj" Id="8f9b54de-1f05-4370-ab43-2c35b3bd4da2" />
 </Solution>
