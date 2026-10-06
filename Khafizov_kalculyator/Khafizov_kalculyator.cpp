@@ -198,25 +198,22 @@ void saveData(const Pipe& p,bool pipeExists,const CS& c,bool csExists) {
 void loadPipe(ifstream& fin, Pipe& p, bool& pipeExists) {
     int flag;
     fin >> flag;
-    fin.ignore(10000, '\n');
     pipeExists = (flag != 0);
     if (pipeExists) {
-        getline(fin, p.name);
+        getline(fin >> ws, p.name);
         fin >> p.length >> p.diameter >> p.underRepair;
-        fin.ignore(10000, '\n');
     }
 }
 void loadCS(ifstream& fin, CS& c, bool& csExists) {
     int flag;
     fin >> flag;
-    fin.ignore(10000, '\n');
     csExists = (flag != 0);
     if (csExists) {
-        getline(fin, c.name);
+        getline(fin >> ws, c.name);
         fin >> c.shopsTotal >> c.shopsWorking >> c.stationClass;
-        fin.ignore(10000, '\n');
     }
 }
+
 void loadData(Pipe& p, bool& pipeExists, CS& c, bool& csExists) {
     ifstream fin("data.txt");
     if (!fin) {
